@@ -1,6 +1,6 @@
 package com.example.littlelemonapplication
 
-import android.util.Log
+import android.content.SharedPreferences
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -25,15 +25,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.littlelemonapplication.ui.theme.DarkGreen
-import com.example.littlelemonapplication.ui.theme.Yellow
+import androidx.navigation.NavHostController
+import com.example.littlelemonapplication.ui.theme.green
+import com.example.littlelemonapplication.ui.theme.yellow
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun UserOnBoarding(){
+fun UserOnBoarding(navController: NavHostController, sharedPreferences: SharedPreferences){
 
     var firstName by remember {
         mutableStateOf("")
@@ -42,6 +42,10 @@ fun UserOnBoarding(){
         mutableStateOf("")
     }
     var emailAddress by remember {
+        mutableStateOf("")
+    }
+
+    var registrationMessage by remember {
         mutableStateOf("")
     }
 
@@ -54,7 +58,7 @@ fun UserOnBoarding(){
         Box(modifier = Modifier
             .fillMaxWidth()
             .height(100.dp)
-            .background(DarkGreen)
+            .background(green)
             .padding(vertical = 15.dp)
         ){
             Text(
@@ -66,7 +70,7 @@ fun UserOnBoarding(){
         }
         Text(
             text = "Personal Information",
-            modifier = Modifier.padding(vertical = 30.dp, horizontal = 15.dp),
+            modifier = Modifier.padding(top = 30.dp, bottom = 10.dp, start = 15.dp),
             fontSize = 20.sp,
             fontWeight = FontWeight.ExtraBold
         )
@@ -118,34 +122,50 @@ fun UserOnBoarding(){
             )
         }
 
+        //Button Container Box
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(vertical = 15.dp, horizontal = 20.dp),
             contentAlignment = Alignment.BottomCenter
         ){
-            Button(
-                onClick = { performTask(firstName, lastName, emailAddress) },
-                colors = ButtonDefaults.buttonColors(containerColor = Yellow),
-                shape = RoundedCornerShape(10.dp),
-                modifier = Modifier.fillMaxWidth(),
-            ) {
+            Column(Modifier.fillMaxSize()) {
+
                 Text(
-                    text = "REGISTER",
-                    color = Color.Black,
-                    modifier = Modifier.padding(vertical = 5.dp)
+                    text = registrationMessage,
+                    modifier = Modifier.padding(vertical = 10.dp, horizontal = 5.dp),
+                    color = if (registrationMessage.contains("unsuccessful")) Color.Red else Color.Green
                 )
+                Button(
+                    onClick = {
+                        if (firstName.isBlank() || lastName.isBlank() || emailAddress.isBlank()) {
+                            registrationMessage = "Registration unsuccessful."
+                        } else {
+                            val editor = sharedPreferences.edit()
+                            editor.putBoolean("isRegistered", true)
+                            // Save the registration data (firstName, lastName, emailAddress) here using editor.putString()
+                            editor.putString("firstName", firstName)
+                            editor.putString("lastName", lastName)
+                            editor.putString("emailAddress", emailAddress)
+                            editor.apply()
+
+                            registrationMessage = "Registration successful!"
+                            navController.navigate(Home.route)
+                        }
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = yellow),
+                    shape = RoundedCornerShape(10.dp),
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    Text(
+                        text = "REGISTER",
+                        color = Color.Black,
+                        modifier = Modifier.padding(vertical = 5.dp)
+                    )
+                }
+
             }
         }
     }
 }
 
-fun performTask(firstName: String, lastName: String, emailAddress: String) {
-    Log.d("InfoEnteredByUser", "$firstName $lastName $emailAddress")
-}
-
-@Preview(showBackground = true)
-@Composable
-fun UserOnBoardingPreview(){
-    UserOnBoarding()
-}
