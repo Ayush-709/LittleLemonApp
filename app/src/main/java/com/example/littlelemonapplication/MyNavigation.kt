@@ -20,10 +20,10 @@ fun Navigation(navController: NavHostController, sharedPreferences: SharedPrefer
             }
         }
         composable(Home.route) {
-            HomeScreen()
+            HomeScreen(navController)
         }
         composable(Profile.route) {
-            ProfileScreen()
+            ProfileScreen(navController)
         }
     }
 }

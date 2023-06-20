@@ -28,8 +28,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.example.littlelemonapplication.ui.theme.DarkGreen
-import com.example.littlelemonapplication.ui.theme.Yellow
+import com.example.littlelemonapplication.ui.theme.green
+import com.example.littlelemonapplication.ui.theme.yellow
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -58,7 +58,7 @@ fun UserOnBoarding(navController: NavHostController, sharedPreferences: SharedPr
         Box(modifier = Modifier
             .fillMaxWidth()
             .height(100.dp)
-            .background(DarkGreen)
+            .background(green)
             .padding(vertical = 15.dp)
         ){
             Text(
@@ -133,13 +133,13 @@ fun UserOnBoarding(navController: NavHostController, sharedPreferences: SharedPr
 
                 Text(
                     text = registrationMessage,
-                    modifier = Modifier.padding(vertical = 10.dp, horizontal = 20.dp),
+                    modifier = Modifier.padding(vertical = 10.dp, horizontal = 5.dp),
                     color = if (registrationMessage.contains("unsuccessful")) Color.Red else Color.Green
                 )
                 Button(
                     onClick = {
                         if (firstName.isBlank() || lastName.isBlank() || emailAddress.isBlank()) {
-                            registrationMessage = "Registration unsuccessful. Please enter all data."
+                            registrationMessage = "Registration unsuccessful."
                         } else {
                             val editor = sharedPreferences.edit()
                             editor.putBoolean("isRegistered", true)
@@ -153,7 +153,7 @@ fun UserOnBoarding(navController: NavHostController, sharedPreferences: SharedPr
                             navController.navigate(Home.route)
                         }
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = Yellow),
+                    colors = ButtonDefaults.buttonColors(containerColor = yellow),
                     shape = RoundedCornerShape(10.dp),
                     modifier = Modifier.fillMaxWidth(),
                 ) {
