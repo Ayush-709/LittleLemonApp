@@ -21,6 +21,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -53,7 +54,7 @@ fun UserOnBoarding(navController: NavHostController, sharedPreferences: SharedPr
         Image(
             painter = painterResource(id = R.drawable.logo),
             contentDescription ="logo",
-            modifier = Modifier.padding(horizontal = 80.dp, vertical = 20.dp)
+            modifier = Modifier.padding(horizontal = 80.dp, vertical = 20.dp).fillMaxWidth(0.8f).align(CenterHorizontally)
         )
         Box(modifier = Modifier
             .fillMaxWidth()
