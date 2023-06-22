@@ -7,20 +7,20 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 
 @Composable
-fun Navigation(navController: NavHostController, sharedPreferences: SharedPreferences) {
+fun Navigation(navController: NavHostController, sharedPreferences: SharedPreferences, menuItemDao: MenuItemDao) {
     val isUserRegistered = sharedPreferences.getBoolean("isRegistered", false)
 
     NavHost(
         navController = navController,
-        startDestination = determineStartDestination(sharedPreferences)
+        startDestination = determineStartDestination(sharedPreferences),
     ) {
         if (!isUserRegistered) {
             composable(OnBoard.route) {
-                UserOnBoarding(navController, sharedPreferences)
+                UserOnBoarding(navController, sharedPreferences,menuItemDao)
             }
         }
         composable(Home.route) {
-            HomeScreen(navController)
+            HomeScreen(navController, menuItemDao = menuItemDao)
         }
         composable(Profile.route) {
             ProfileScreen(navController)

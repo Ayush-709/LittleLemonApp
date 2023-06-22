@@ -34,7 +34,7 @@ import com.example.littlelemonapplication.ui.theme.yellow
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun UserOnBoarding(navController: NavHostController, sharedPreferences: SharedPreferences){
+fun UserOnBoarding(navController: NavHostController, sharedPreferences: SharedPreferences,menuItemDao: MenuItemDao){
 
     var firstName by remember {
         mutableStateOf("")

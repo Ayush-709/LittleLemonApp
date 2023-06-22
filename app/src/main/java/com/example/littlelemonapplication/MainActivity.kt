@@ -52,8 +52,8 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    UserOnBoarding(navController, sharedPreferences)
-                    Navigation(navController, sharedPreferences)
+                    UserOnBoarding(navController, sharedPreferences, database.menuItemDao())
+                    Navigation(navController, sharedPreferences, database.menuItemDao())
                 }
             }
         }
