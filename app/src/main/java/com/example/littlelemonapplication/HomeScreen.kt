@@ -52,6 +52,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.example.littlelemonapplication.ui.theme.DarkGray
 import com.example.littlelemonapplication.ui.theme.cloud
 import com.example.littlelemonapplication.ui.theme.green
@@ -65,16 +66,24 @@ fun HomeScreen(navController: NavController, menuItemDao: MenuItemDao){
     var searchPhrase by remember {
         mutableStateOf("")
     }
+    var selectedCategory by remember {
+        mutableStateOf("")
+    }
 
     val menuCategoryList by menuItemDao.getAllCategories().observeAsState(emptyList())
     val databaseMenuItems by menuItemDao.getAll().observeAsState(emptyList())
-    val imageMap:Map<String,Int> = mapOf(
+    val imageMap: Map<String, Int> = mapOf(
         "Greek Salad" to R.drawable.greek_salad,
         "Lemon Desert" to R.drawable.lemon_dessert,
         "Grilled Fish" to R.drawable.grilled_fish,
         "Pasta" to R.drawable.pasta,
         "Bruschetta" to R.drawable.bruschetta
     )
+
+    val filteredMenuItems = databaseMenuItems.filter { menuItem ->
+        (selectedCategory.isEmpty() || menuItem.category == selectedCategory) &&
+                (searchPhrase.isEmpty() || menuItem.title.startsWith(searchPhrase, ignoreCase = true))
+    }
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -197,7 +206,7 @@ fun HomeScreen(navController: NavController, menuItemDao: MenuItemDao){
                 )
             }
 
-            //Category scroll
+            //Category and Items
             Column(
                 Modifier
                     .fillMaxSize()
@@ -211,7 +220,13 @@ fun HomeScreen(navController: NavController, menuItemDao: MenuItemDao){
                 )
                 LazyRow(state = rememberLazyListState()){
                     items(menuCategoryList) { category ->
-                        LazyCategories(category)
+                        LazyCategories(
+                            category = category,
+                            isSelected = selectedCategory == category,
+                            onClick = {
+                                selectedCategory = if (selectedCategory == category) "" else category
+                            }
+                        )
                     }
                 }
                 Divider(
@@ -219,22 +234,20 @@ fun HomeScreen(navController: NavController, menuItemDao: MenuItemDao){
                     thickness = 1.dp,
                 )
                 LazyColumn(state = rememberLazyListState()) {
-                    items(databaseMenuItems) { menuItems ->
-                        MenuItemsList(navController,menuItems, imageMap)
+                    items(filteredMenuItems) { menuItems ->
+                        MenuItemsList(menuItems, imageMap)
                     }
                 }
-
-
             }
         }
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class, ExperimentalGlideComposeApi::class)
 @Composable
-fun MenuItemsList(navController: NavController, dish: MenuItemRoom, imagePath:Map<String,Int>) {
+fun MenuItemsList(dish: MenuItemRoom, imagePath:Map<String,Int>) {
     val imageUrl = imagePath[dish.title]
-    Card(onClick = {}) {
+    Card(onClick = { }) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -265,7 +278,7 @@ fun MenuItemsList(navController: NavController, dish: MenuItemRoom, imagePath:Ma
                     imageUrl?.let { painterResource(id = it) }?.let {
                         Image(
                             painter = it,
-                            contentDescription = "",
+                            contentDescription ="",
                             modifier = Modifier.clip(RoundedCornerShape(20.dp)),
                             alignment = CenterEnd
                         )
@@ -282,19 +295,19 @@ fun MenuItemsList(navController: NavController, dish: MenuItemRoom, imagePath:Ma
 }
 
 @Composable
-fun LazyCategories(category:String){
+fun LazyCategories(category:String, isSelected: Boolean, onClick: (String) -> Unit){
     Box(modifier = Modifier.padding(horizontal = 5.dp)){
         Button(
-            onClick = { /*TODO*/ },
+            onClick = { onClick(category) },
             shape = RoundedCornerShape(25.dp),
             colors = ButtonDefaults.textButtonColors(
-                containerColor = cloud,
+                containerColor = if (isSelected) green else cloud,
                 contentColor = green
             )
         ) {
             Text(
                 text = category.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString() },
-                color = green,
+                color = if (isSelected) cloud else green,
                 fontFamily = FontFamily(fonts = listOf(Font(R.font.markzaki))),
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold

@@ -1,5 +1,6 @@
 package com.example.littlelemonapplication
 
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -9,6 +10,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.room.Room
 import com.example.littlelemonapplication.ui.theme.LittleLemonApplicationTheme
@@ -52,8 +55,20 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    UserOnBoarding(navController, sharedPreferences, database.menuItemDao())
-                    Navigation(navController, sharedPreferences, database.menuItemDao())
+                    NavHost(
+                        navController = navController,
+                        startDestination = determineStartDestination(sharedPreferences),
+                    ) {
+                        composable(OnBoard.route) {
+                            UserOnBoarding(navController, sharedPreferences)
+                        }
+                        composable(Home.route) {
+                            HomeScreen(navController, menuItemDao = database.menuItemDao())
+                        }
+                        composable(Profile.route) {
+                            ProfileScreen(navController)
+                        }
+                    }
                 }
             }
         }
@@ -67,6 +82,15 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    private fun determineStartDestination(sharedPreferences: SharedPreferences): String {
+        val isUserRegistered = sharedPreferences.getBoolean("isRegistered", false)
+        return if(isUserRegistered){
+            Home.route
+        }else{
+            OnBoard.route
+        }
+
+    }
     private suspend fun fetchMenu(): List<MenuItemNetwork> {
         return httpClient.get(url).body<MenuNetworkData>().menu
     }

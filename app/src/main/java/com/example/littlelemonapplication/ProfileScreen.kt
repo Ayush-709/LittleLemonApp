@@ -33,7 +33,6 @@ import com.example.littlelemonapplication.ui.theme.yellow
 fun ProfileScreen(navController: NavController){
     val sharedPreferences = LocalContext.current.getSharedPreferences("myPrefs", Context.MODE_PRIVATE)
 
-
     val firstName = sharedPreferences.getString("firstName","")?:""
 
     val lastName = sharedPreferences.getString("lastName","")?:""
@@ -157,11 +156,12 @@ fun ProfileScreen(navController: NavController){
                 Button(
                     onClick = {
                         val editor = sharedPreferences.edit()
-                        editor.remove("isRegistered")
+                        editor.putBoolean("isRegistered", false)
                         editor.remove("firstName")
                         editor.remove("lastName")
                         editor.remove("emailAddress")
                         editor.apply()
+
                         navController.navigate(OnBoard.route)
                     },
                     modifier = Modifier

@@ -33,6 +33,9 @@ interface MenuItemDao {
 
     @Query("SELECT DISTINCT category FROM MenuItemRoom")
     fun getAllCategories(): LiveData<List<String>>
+
+    @Query("SELECT * FROM MenuItemRoom WHERE id = :itemId")
+    fun getItem(itemId: Int): LiveData<MenuItemRoom?>
 }
 
 @Database(entities = [MenuItemRoom::class], version = 1)
