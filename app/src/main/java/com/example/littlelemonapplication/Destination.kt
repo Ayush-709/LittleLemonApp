@@ -13,5 +13,5 @@ object Profile:Destination{
 }
 
 object OnBoard:Destination{
-    override val route= "onBoard"
+    override val route= "OnBoard"
 }

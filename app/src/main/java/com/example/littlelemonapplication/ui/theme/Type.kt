@@ -34,6 +34,7 @@ val Typography = Typography(
     )
     */
 )
+
 val styleTypography = androidx.compose.material.Typography(
     h1 = TextStyle(
         fontSize = 26.sp,
